@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import "./ToDoList.css";
 
 function ToDoList() {
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState("");
+  const [tasks, setTasks] = useState(()=> {
+      const savedTasks = localStorage.getItem("tasks")
+  return savedTasks ? JSON.parse(savedTasks) : [] 
+  });
+  const [newTask, setNewTask] = useState("")
 
   function handleInputChange(event) {
     setNewTask(event.target.value);
@@ -21,16 +24,32 @@ function ToDoList() {
       setNewTask("");
     }
   }
+  
   function handleKeyDown(event){
-  if(event.key === "Enter"){
-    addTask(newTask);
+    if(event.key === "Enter"){
+      addTask(newTask);
+    }
   }
-}
+
+  function toggleTasks(index) {
+    const newTasks = tasks.map((task, i) => {
+      if (i === index) {
+        return { ...task, completed: !task.completed };
+      }
+      return task;
+    });
+    setTasks(newTasks);
+  }
 
   function deleteTask(index) {
     const updatedTasks = tasks.filter((_, i) => i !== index);
     setTasks(updatedTasks);
   }
+
+useEffect(() => {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}, [tasks]);
+
 
   return (
     <div className="container">
@@ -74,9 +93,20 @@ function ToDoList() {
                 tasks.map((task, index) => (
                   <tr key={task.id} className="table-row">
                     <td>
-                      <span className="badge-pending">Pending</span>
-                    </td>
-                    <td className="task-name">{task.text}</td>
+                              <span
+                                onClick={() => toggleTasks(index)}
+                                className={`status ${task.completed ? "done" : "pending"}`}
+                              >
+                                {task.completed ? "Done" : "Pending"}
+                              </span>
+                            </td>
+                    <td className="task-name"
+                        style={{
+                          textDecoration: task.completed ? "line-through" : "none"
+                        }}
+                      >
+                        {task.text}
+                      </td>
                     <td className="task-date">{task.date}</td>
                     <td className="text-right">
                       <button
