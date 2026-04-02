@@ -43,6 +43,35 @@
     padding: 0 20px; border-radius: 10px; font-weight: 600; cursor: pointer;
     }
 
+    /* Filters */
+    .filter-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    }
+
+    .filter-button {
+    background: #f1f5f9;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    }
+
+    .filter-button:hover {
+    background: #e2e8f0;
+    }
+
+    .filter-button.active {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    }
+
     /* Table Styling */
     .table-wrapper {
     overflow-x: auto; /* Pour le responsive */

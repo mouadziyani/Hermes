@@ -7,6 +7,7 @@ function ToDoList() {
   return savedTasks ? JSON.parse(savedTasks) : [] 
   });
   const [newTask, setNewTask] = useState("")
+  const [filter, setFilter] = useState("all");
 
   function handleInputChange(event) {
     setNewTask(event.target.value);
@@ -31,9 +32,9 @@ function ToDoList() {
     }
   }
 
-  function toggleTasks(index) {
-    const newTasks = tasks.map((task, i) => {
-      if (i === index) {
+  function toggleTasks(taskId) {
+    const newTasks = tasks.map((task) => {
+      if (task.id === taskId) {
         return { ...task, completed: !task.completed };
       }
       return task;
@@ -41,8 +42,8 @@ function ToDoList() {
     setTasks(newTasks);
   }
 
-  function deleteTask(index) {
-    const updatedTasks = tasks.filter((_, i) => i !== index);
+  function deleteTask(taskId) {
+    const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
   }
 
@@ -50,6 +51,11 @@ useEffect(() => {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }, [tasks]);
 
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "completed") return task.completed;
+    if (filter === "pending") return !task.completed;
+    return true;
+  });
 
   return (
     <div className="container">
@@ -72,6 +78,27 @@ useEffect(() => {
           </button>
         </div>
 
+        <div className="filter-group">
+          <button
+            className={`filter-button ${filter === "all" ? "active" : ""}`}
+            onClick={() => setFilter("all")}
+          >
+            All
+          </button>
+          <button
+            className={`filter-button ${filter === "completed" ? "active" : ""}`}
+            onClick={() => setFilter("completed")}
+          >
+            Completed
+          </button>
+          <button
+            className={`filter-button ${filter === "pending" ? "active" : ""}`}
+            onClick={() => setFilter("pending")}
+          >
+            Pending
+          </button>
+        </div>
+
         <div className="table-wrapper">
           <table className="task-table">
             <thead>
@@ -83,18 +110,18 @@ useEffect(() => {
               </tr>
             </thead>
             <tbody>
-              {tasks.length === 0 ? (
+              {filteredTasks.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="empty-row">
                     No tasks found. Time to relax!
                   </td>
                 </tr>
               ) : (
-                tasks.map((task, index) => (
+                filteredTasks.map((task) => (
                   <tr key={task.id} className="table-row">
                     <td>
                               <span
-                                onClick={() => toggleTasks(index)}
+                                onClick={() => toggleTasks(task.id)}
                                 className={`status ${task.completed ? "done" : "pending"}`}
                               >
                                 {task.completed ? "Done" : "Pending"}
@@ -111,7 +138,7 @@ useEffect(() => {
                     <td className="text-right">
                       <button
                         className="btn-delete"
-                        onClick={() => deleteTask(index)}
+                        onClick={() => deleteTask(task.id)}
                       >
                         Delete
                       </button>
