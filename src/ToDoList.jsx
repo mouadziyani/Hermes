@@ -1,12 +1,12 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./ToDoList.css";
 
 function ToDoList() {
-  const [tasks, setTasks] = useState(()=> {
-      const savedTasks = localStorage.getItem("tasks")
-  return savedTasks ? JSON.parse(savedTasks) : [] 
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    return savedTasks ? JSON.parse(savedTasks) : [];
   });
-  const [newTask, setNewTask] = useState("")
+  const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("all");
 
   function handleInputChange(event) {
@@ -25,9 +25,9 @@ function ToDoList() {
       setNewTask("");
     }
   }
-  
-  function handleKeyDown(event){
-    if(event.key === "Enter"){
+
+  function handleKeyDown(event) {
+    if (event.key === "Enter") {
       addTask(newTask);
     }
   }
@@ -47,9 +47,9 @@ function ToDoList() {
     setTasks(updatedTasks);
   }
 
-useEffect(() => {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}, [tasks]);
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const filteredTasks = tasks.filter((task) => {
     if (filter === "completed") return task.completed;
@@ -58,100 +58,70 @@ useEffect(() => {
   });
 
   return (
-    <div className="container">
-      <div className="todo-card">
-        <header className="header">
-          <h1>Task Manager</h1>
-          <p>Manage your productivity efficiently</p>
-        </header>
+  <div className="book-container">
+    <div className="book-spine">
+      <div className="spine-detail top"></div>
+      <div className="spine-detail bottom"></div>
+    </div>
+    <div className="book-page">
+      <header className="book-header">
+        <h1>My Journal</h1>
+        <p>Daily Missions & Tasks</p>
+      </header>
 
-        <div className="input-group">
-          <input
-            type="text"
-            value={newTask}
-            placeholder="Add a new mission..."
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-          />
-          <button className="add-button" onClick={() => addTask(newTask)}>
-            Add Task
-          </button>
-        </div>
+      <div className="input-section">
+        <input
+          type="text"
+          value={newTask}
+          placeholder="What's your next mission?..."
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+        />
+        <button className="ink-button" onClick={() => addTask(newTask)}>
+          Add Task
+        </button>
+      </div>
 
-        <div className="filter-group">
-          <button
-            className={`filter-button ${filter === "all" ? "active" : ""}`}
-            onClick={() => setFilter("all")}
-          >
-            All
-          </button>
-          <button
-            className={`filter-button ${filter === "completed" ? "active" : ""}`}
-            onClick={() => setFilter("completed")}
-          >
-            Completed
-          </button>
-          <button
-            className={`filter-button ${filter === "pending" ? "active" : ""}`}
-            onClick={() => setFilter("pending")}
-          >
-            Pending
-          </button>
-        </div>
+      <nav className="book-filters">
+        <button className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>All Entries</button>
+        <button className={filter === "completed" ? "active" : ""} onClick={() => setFilter("completed")}>Finished</button>
+        <button className={filter === "pending" ? "active" : ""} onClick={() => setFilter("pending")}>To-do</button>
+      </nav>
 
-        <div className="table-wrapper">
-          <table className="task-table">
-            <thead>
+      <div className="page-content">
+        <table className="journal-table">
+          <tbody>
+            {filteredTasks.length === 0 ? (
               <tr>
-                <th>Status</th>
-                <th>Task Description</th>
-                <th>Created At</th>
-                <th className="text-right">Actions</th>
+                <td className="empty-msg">No missions recorded yet...</td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredTasks.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="empty-row">
-                    No tasks found. Time to relax!
+            ) : (
+              filteredTasks.map((task) => (
+                <tr key={task.id} className="journal-row">
+                  <td className="col-status">
+                    <div 
+                      onClick={() => toggleTasks(task.id)}
+                      className={`bullet ${task.completed ? "checked" : ""}`}
+                    >
+                      {task.completed ? "●" : "○"}
+                    </div>
+                  </td>
+                  <td className={`col-text ${task.completed ? "strikethrough" : ""}`}>
+                    {task.text}
+                  </td>
+                  <td className="col-date">{task.date}</td>
+                  <td className="col-action">
+                    <button className="del-ink" onClick={() => deleteTask(task.id)}>×</button>
                   </td>
                 </tr>
-              ) : (
-                filteredTasks.map((task) => (
-                  <tr key={task.id} className="table-row">
-                    <td>
-                              <span
-                                onClick={() => toggleTasks(task.id)}
-                                className={`status ${task.completed ? "done" : "pending"}`}
-                              >
-                                {task.completed ? "Done" : "Pending"}
-                              </span>
-                            </td>
-                    <td className="task-name"
-                        style={{
-                          textDecoration: task.completed ? "line-through" : "none"
-                        }}
-                      >
-                        {task.text}
-                      </td>
-                    <td className="task-date">{task.date}</td>
-                    <td className="text-right">
-                      <button
-                        className="btn-delete"
-                        onClick={() => deleteTask(task.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default ToDoList;
