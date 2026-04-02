@@ -81,10 +81,31 @@
     .task-name { font-weight: 500; color: #1e293b; }
     .task-date { color: var(--text-muted); }
 
-    /* Badges & Buttons */
-    .badge-pending {
-    background: #fff7ed; color: #c2410c;
-    padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+    /* Status styles */
+    .status {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    color: white;
+    }
+
+    /* Pending */
+    .pending {
+    background-color: rgb(255, 166, 0);
+    }
+
+    /* Done */
+    .done {
+    background-color: rgb(0, 255, 0);
+    }
+
+    .status {
+    transition: 0.3s;
+    }
+
+    .status:hover {
+    transform: scale(1.1);
     }
 
     .btn-delete {
