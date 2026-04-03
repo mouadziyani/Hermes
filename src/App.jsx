@@ -7,7 +7,14 @@ import Filter from "./components/Filter.jsx";
 function App() {
   const [tasks, setTasks] = useState(() => {
     const savedTasks = localStorage.getItem("tasks");
-    return savedTasks ? JSON.parse(savedTasks) : [];
+    if (!savedTasks) return [];
+    const parsed = JSON.parse(savedTasks);
+    return parsed.map((task) => ({
+      id: task.id,
+      title: task.title ?? task.text ?? "",
+      completed: Boolean(task.completed),
+      created_at: task.created_at ?? task.date ?? "",
+    }));
   });
   const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("all");
@@ -20,9 +27,9 @@ function App() {
     if (text.trim() !== "") {
       const taskObj = {
         id: Date.now(),
-        text,
-        date: new Date().toLocaleDateString("fr-FR"),
+        title: text,
         completed: false,
+        created_at: new Date().toLocaleDateString("fr-FR"),
       };
       setTasks([...tasks, taskObj]);
       setNewTask("");
@@ -65,7 +72,7 @@ function App() {
       <div className="book-spine">
         <div className="spine-detail top"></div>
         <div className="spine-detail bottom"></div>
-      </div>
+      </div>  
       <div className="book-page">
         <header className="book-header">
           <h1>My Journal</h1>
