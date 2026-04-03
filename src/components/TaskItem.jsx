@@ -10,9 +10,9 @@ function TaskItem({ task, onToggle, onDelete }) {
         </div>
       </td>
       <td className={`col-text ${task.completed ? "strikethrough" : ""}`}>
-        {task.text}
+        {task.title}
       </td>
-      <td className="col-date">{task.date}</td>
+      <td className="col-date">{task.created_at}</td>
       <td className="col-action">
         <button className="del-ink" onClick={() => onDelete(task.id)}>
           x
